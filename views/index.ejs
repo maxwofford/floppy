@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/hackclub/css@79ee8661dfe9ab17af7d35cd8d9d7373029a8919/theme.css">
+  </style>
+  <link rel="stylesheet"
+    href="https://cdn.jsdelivr.net/gh/hackclub/css@79ee8661dfe9ab17af7d35cd8d9d7373029a8919/fonts.css">
+  </style>
+</head>
+
+<body>
+  <div style="
+    background: var(--sheet);
+    text-align: center;
+    padding-top: var(--spacing-5);
+    padding-bottom: var(--spacing-4);
+  ">
+    <div class="outline-badge" style="display: inline; background: var(--accent); color: white;">
+      Files are accessible by going to <%= url %> on the '<%= wifi %>' network</div>
+    <h1 class="title" style="color: var(--primary); margin-top: 1em;">HQ's floppy</h1>
+    <p class="headline">
+      Missing your floppy disk? Don't have the same ports? Transfer your files here!
+    </p>
+    <p class="subtitle" style="
+      color: var(--muted);
+      margin-bottom: var(--spacing-4);
+      display: flex;
+      gap: 32px;
+      height: 30px;
+      justify-content: center;
+      align-items: center;
+      letter-spacing: 0;
+      padding-top: 8px;
+    ">
+      <span>Files are accessible for 24 hours before expiring. Anyone on the wifi network can download them.</span>
+    </p>
+  </div>
+  <div class="container">
+
+    <ul>
+      <% files.forEach(file=> { %>
+        <li>
+          <a href="/<%= file.name %>">
+            <%= file.name %>
+          </a>
+          (<span class="muted">
+            <%= file.timeago %>
+          </span>)
+        </li>
+        <% }) %>
+    </ul>
+    <p>
+      There are <%= files.length %> files on the drive!
+    </p>
+    <!-- <form ref='uploadForm' id='uploadForm' action='http://localhost:3000/upload' method='post'
+      encType="multipart/form-data">
+      <input type="file" name="sampleFile" />
+      <input type='submit' value='Upload!' />
+    </form> -->
+    <div class="container narrow" style="margin-top: var(--spacing-5)">
+      <h1 class="headline" style="font-size: var(--font-5); margin-top: var(--spacing-4)">
+        Upload
+      </h1>
+      <div class="card sunken">
+        <div style="
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          gap: var(--spacing-3);
+        ">
+
+          <form ref='uploadForm' id='uploadForm' action='http://<%= url %>/upload' method='post'
+            encType="multipart/form-data">
+            <input type="file" name="sampleFile" />
+            <input type='submit' value='Upload!' />
+          </form>
+        </div>
+      </div>
+    </div>
+</body>
+
+</html>
