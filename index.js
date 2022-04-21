@@ -9,8 +9,9 @@ const timeago = require('timeago.js')
 
 const app = express()
 
-async function clearDirectory() {
-  // await shell.exec(`find ${filesDir} -daystart -mtime +1 ! -iname ".*" -delete`)
+async function clearDirectory(dryRun = true) {
+  const action = dryRun ? 'print' : 'delete'
+  await shell.exec(`find ${filesDir} -maxdepth 1 -mtime +1 -type f -iname ".*" -${action}`)
 }
 
 function fileList() {
@@ -36,6 +37,7 @@ app.set('views','./views');
 
 
 app.get("/", async function (req, res) {
+  await clearDirectory(true)
   const lsFiles = shell.ls('-l', filesDir)
   const sortedFiles = [...lsFiles].sort((a, b) => b.mtimeMs-a.mtimeMs)
   const files = sortedFiles.map(f => ({
@@ -43,16 +45,17 @@ app.get("/", async function (req, res) {
     mtimeMs: f.mtimeMs,
     timeago: timeago.format(f.mtimeMs)
   }))
-  const localhost = await shell.exec('scutil --get LocalHostName')
+  const localhost = await shell.exec('scutil --get LocalHostName').trim()
   res.render("index.ejs", {
     files,
-    url: `${localhost.trim()}.local:3000`,
+    url: `${localhost}.local:3000`,
     wifi: await wifiName()
   })
 })
 
 app.use(fileUpload())
 app.post("/upload", async function (req, res) {
+  await clearDirectory(true)
   const { files } = req
   const { sampleFile } = files
   const uploadPath = `${filesDir}/${sampleFile.name}`
@@ -68,13 +71,15 @@ app.post("/upload", async function (req, res) {
   }
 })
 
-app.delete(":filename", async function (req, res) {
-  if (req.param.filename[0] == ".") {
+app.get("/delete/:filename", async function (req, res) {
+  await clearDirectory(true)
+
+  if (req.params.filename[0] == ".") {
     // error
     throw new Error("Cannot remove dotfile")
   }
-  // shell.rm(`${filesDir}${req.param.filename}`)
-  console.log(`${filesDir}${req.param.filename}`)
+  shell.rm(`${filesDir}${req.params.filename}`)
+  console.log(`${filesDir}${req.params.filename}`)
 
   res.redirect('/')
 })
@@ -83,5 +88,5 @@ app.use(express.static('files'))
 
 app.listen(3000, '0.0.0.0', () => {
   console.log('server started')
-  clearDirectory()
+  clearDirectory(true)
 })

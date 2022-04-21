@@ -49,6 +49,9 @@
           (<span class="muted">
             <%= file.timeago %>
           </span>)
+          <a href="/delete/<%= file.name %>" class="pill">
+            x
+          </a>
         </li>
         <% }) %>
     </ul>
