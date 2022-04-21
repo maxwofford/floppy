@@ -1,3 +1,4 @@
 node_modules/
 files/*
 !files/.keep
+launcher.sh
