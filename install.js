@@ -17,10 +17,13 @@ const EXECUTABLE = `${EXEC_PATH}/launcher.sh`
 
 console.log('Creating launcher...')
 const NODE_PATH = path.dirname(shell.exec('which node').trim())
+const YARN_PATH = path.dirname(shell.exec('which yarn').trim())
 const LAUNCHER_CONTENT = `
   echo "Attempting to boot server..."
-  export PATH="${NODE_PATH}:$PATH"
-  node ./index.js
+  export PATH="${YARN_PATH}:${NODE_PATH}:$PATH"
+  yarn install
+  // node ./index.js
+  yarn run dev
 `
 ShellString(LAUNCHER_CONTENT).to(EXECUTABLE)
 shell.exec(`chmod +x ${EXECUTABLE}`)
